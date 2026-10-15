@@ -89,7 +89,7 @@ COLOR_MAP = {"Película": "#38BDF8", "Serie": "#A855F7"}
 BACKGROUND = "#0F172A"
 CARD_BG    = "#1E293B"
 TEXT       = "#F8FAFC"
-SUBTEXT    = "#94A3B8"
+SUBTEXT    = "#B3D2FD"
 ACCENT     = "#38BDF8"
 BORDER     = "#334155"
 
@@ -142,9 +142,25 @@ app.layout = html.Div(
         # Panel Global de Controles
         html.Div([
             html.Div([
-                html.Label("Formato de Contenido:", style={"fontSize": "11px", "fontWeight": "600", "color": SUBTEXT, "marginBottom": "4px", "display": "block"}),
-                dcc.Checklist(id="filter-type", options=[{"label": f" {t}", "value": t} for t in TIPOS_OPCIONES], value=TIPOS_OPCIONES, inline=True, style={"color": TEXT, "fontSize": "12px"})
-            ], style={"width": "180px"}),
+               html.Label("Formato de Contenido:", style={"fontSize": "11px", "fontWeight": "600", "color": ACCENT, "marginBottom": "6px", "display": "block"}),
+               dcc.Checklist(
+                       id="filter-type", 
+                       options=[
+                           {"label": " 🎬 Película", "value": "Película"},
+                           {"label": " 📺 Serie", "value": "Serie"}
+                       ], 
+                       value=TIPOS_OPCIONES, 
+                       inline=True, 
+                       inputStyle={"marginRight": "5px", "cursor": "pointer"},
+                       labelStyle={"marginRight": "12px", "color": "#FFFFFF", "fontSize": "12px", "fontWeight": "600", "cursor": "pointer"}
+                   )
+            ], style={
+    "width": "200px", 
+    "backgroundColor": "#0F172A",  # Fondo un poco más profundo para dar contraste
+    "padding": "8px 12px", 
+    "borderRadius": "6px", 
+    "border": f"1px solid {BORDER}"
+}),
 
             html.Div([
                 html.Label("Géneros Principales:", style={"fontSize": "11px", "fontWeight": "600", "color": SUBTEXT, "marginBottom": "4px", "display": "block"}),
@@ -237,6 +253,7 @@ def render_tab_content(tab, selected_types, selected_genres, selected_tiers, sel
                 html.H4("🎞️ Mezcla de Formatos (Engagement)", style={"fontSize": "13px", "color": ACCENT, "margin": "0 0 10px 0", "fontWeight": "700"}),
                 build_info_badge("Películas Disponibles", f"{num_pelis:,} ({num_pelis/total_titulos*100:.1f}%)" if total_titulos>0 else "0", "#38BDF8"),
                 build_info_badge("Series Episódicas", f"{num_series:,} ({num_series/total_titulos*100:.1f}%)" if total_titulos>0 else "0", "#A855F7"),
+                build_info_badge("Relación Películas / Series", f"{(num_pelis/num_series):.2f}x" if num_series>0 else "N/A", TEXT),
             ], style={"backgroundColor": CARD_BG, "padding": "14px 16px", "borderRadius": "8px", "border": f"1px solid {BORDER}", "flex": "1", "minWidth": "250px"}),
 
             html.Div([
@@ -427,6 +444,7 @@ def render_tab_content(tab, selected_types, selected_genres, selected_tiers, sel
         fig_quadrant1.add_shape(type="rect", x0=1, x1=threshold_x1, y0=0, y1=threshold_y1, fillcolor="rgba(239, 68, 68, 0.10)", line=dict(color="#EF4444", width=1), layer="below")
         fig_quadrant1.add_shape(type="rect", x0=threshold_x1, x1=5000, y0=0, y1=threshold_y1, fillcolor="rgba(245, 158, 11, 0.12)", line=dict(color="#F59E0B", width=1), layer="below")
 
+  
         # MATRIZ 2: PRESUPUESTO VS POPULARIDAD
         d_cost = d[d['presupuesto_m'] > 0].copy()
         threshold_y2 = 35.0  # Popularidad
@@ -460,6 +478,7 @@ def render_tab_content(tab, selected_types, selected_genres, selected_tiers, sel
         fig_quadrant2.add_shape(type="rect", x0=0.1, x1=threshold_x2, y0=1, y1=threshold_y2, fillcolor="rgba(148, 163, 184, 0.10)", line=dict(color="#64748B", width=1), layer="below")
         fig_quadrant2.add_shape(type="rect", x0=threshold_x2, x1=1000, y0=1, y1=threshold_y2, fillcolor="rgba(239, 68, 68, 0.12)", line=dict(color="#EF4444", width=1), layer="below")
 
+  
 
         return html.Div([
             create_section_header("Matriz de Adquisición y Eficiencia de Licencias", "Herramientas analíticas de 4 cuadrantes para priorizar compras según poder de atracción, retención y costo estimado."),
@@ -475,7 +494,7 @@ def render_tab_content(tab, selected_types, selected_genres, selected_tiers, sel
                     html.P("📌 Diagnóstico Matriz 2: Mapea si los títulos de alto presupuesto realmente generan tracción proporcional antes de renovar contratos de alto costo.", style={"fontSize": "11px", "color": SUBTEXT, "marginTop": "4px"})
                 ], style={"flex": "1", "minWidth": "480px"}),
             ], style={"display": "flex", "gap": "16px", "flexWrap": "wrap", "marginBottom": "20px"}),
-            ])
+ ])
 
     # ─────────────────────────────────────────────────────────────────
     # TAB 5: EXPLORADOR GRANULAR
