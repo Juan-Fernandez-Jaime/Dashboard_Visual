@@ -23,8 +23,8 @@ import plotly.graph_objects as go
 from dash import Dash, dcc, html, Input, Output, dash_table
 
 # --- 2. CARGA Y PREPARACIÓN DE DATOS ---
-pelis_df = pd.read_csv("./netflix_movies_cleaned.csv")
-series_df = pd.read_csv("./netflix_tv_shows_cleaned.csv")
+pelis_df = pd.read_csv("Dash/netflix_movies_cleaned.csv")
+series_df = pd.read_csv("Dash/netflix_tv_shows_cleaned.csv")
 
 pelis_df["tipo"] = "Película"
 series_df["tipo"] = "Serie"
@@ -237,7 +237,6 @@ def render_tab_content(tab, selected_types, selected_genres, selected_tiers, sel
                 html.H4("🎞️ Mezcla de Formatos (Engagement)", style={"fontSize": "13px", "color": ACCENT, "margin": "0 0 10px 0", "fontWeight": "700"}),
                 build_info_badge("Películas Disponibles", f"{num_pelis:,} ({num_pelis/total_titulos*100:.1f}%)" if total_titulos>0 else "0", "#38BDF8"),
                 build_info_badge("Series Episódicas", f"{num_series:,} ({num_series/total_titulos*100:.1f}%)" if total_titulos>0 else "0", "#A855F7"),
-                build_info_badge("Relación Películas / Series", f"{(num_pelis/num_series):.2f}x" if num_series>0 else "N/A", TEXT),
             ], style={"backgroundColor": CARD_BG, "padding": "14px 16px", "borderRadius": "8px", "border": f"1px solid {BORDER}", "flex": "1", "minWidth": "250px"}),
 
             html.Div([
@@ -428,12 +427,6 @@ def render_tab_content(tab, selected_types, selected_genres, selected_tiers, sel
         fig_quadrant1.add_shape(type="rect", x0=1, x1=threshold_x1, y0=0, y1=threshold_y1, fillcolor="rgba(239, 68, 68, 0.10)", line=dict(color="#EF4444", width=1), layer="below")
         fig_quadrant1.add_shape(type="rect", x0=threshold_x1, x1=5000, y0=0, y1=threshold_y1, fillcolor="rgba(245, 158, 11, 0.12)", line=dict(color="#F59E0B", width=1), layer="below")
 
-        # Anotaciones
-        fig_quadrant1.add_annotation(x=0.8, y=9.8, xref="x", yref="y", text="<b>💎 JOYAS OCULTAS</b><br><i>Alto Rating / Pop. Moderada</i><br><span style='font-size:10px;color:#A7F3D0'>Prioridad Compras (Bajo Costo)</span>", showarrow=False, align="left", bgcolor="rgba(6, 78, 59, 0.9)", bordercolor="#10B981", borderwidth=1.5, borderpad=6, font=dict(color="#FFFFFF", size=11))
-        fig_quadrant1.add_annotation(x=2000, y=9.8, xref="x", yref="y", text="<b>🌟 HITS MASIVOS</b><br><i>Alto Rating / Alta Pop.</i><br><span style='font-size:10px;color:#BAE6FD'>Renovación Prioritaria (Ancla)</span>", showarrow=False, align="right", bgcolor="rgba(12, 74, 110, 0.9)", bordercolor="#38BDF8", borderwidth=1.5, borderpad=6, font=dict(color="#FFFFFF", size=11))
-        fig_quadrant1.add_annotation(x=2000, y=1.2, xref="x", yref="y", text="<b>🔥 ÉXITOS VIRALES</b><br><i>Rating Mod. / Alta Pop.</i><br><span style='font-size:10px;color:#FDE68A'>Captación Temporal</span>", showarrow=False, align="right", bgcolor="rgba(120, 53, 15, 0.9)", bordercolor="#F59E0B", borderwidth=1.5, borderpad=6, font=dict(color="#FFFFFF", size=11))
-        fig_quadrant1.add_annotation(x=0.8, y=1.2, xref="x", yref="y", text="<b>⚠️ ZONA DE RIESGO</b><br><i>Rating Mod. / Pop. Baja</i><br><span style='font-size:10px;color:#FCA5A5'>Evaluar Descarte / No Renovar</span>", showarrow=False, align="left", bgcolor="rgba(127, 29, 29, 0.9)", bordercolor="#EF4444", borderwidth=1.5, borderpad=6, font=dict(color="#FFFFFF", size=11))
-
         # MATRIZ 2: PRESUPUESTO VS POPULARIDAD
         d_cost = d[d['presupuesto_m'] > 0].copy()
         threshold_y2 = 35.0  # Popularidad
@@ -467,16 +460,6 @@ def render_tab_content(tab, selected_types, selected_genres, selected_tiers, sel
         fig_quadrant2.add_shape(type="rect", x0=0.1, x1=threshold_x2, y0=1, y1=threshold_y2, fillcolor="rgba(148, 163, 184, 0.10)", line=dict(color="#64748B", width=1), layer="below")
         fig_quadrant2.add_shape(type="rect", x0=threshold_x2, x1=1000, y0=1, y1=threshold_y2, fillcolor="rgba(239, 68, 68, 0.12)", line=dict(color="#EF4444", width=1), layer="below")
 
-        # Anotaciones
-        fig_quadrant2.add_annotation(x=0.2, y=2000, xref="x", yref="y", text="<b>⚡ ALTA EFICIENCIA / MAX ROI</b><br><i>Bajo Presupuesto / Alta Pop.</i><br><span style='font-size:10px;color:#A7F3D0'>Máxima prioridad de adquisición</span>", showarrow=False, align="left", bgcolor="rgba(6, 78, 59, 0.9)", bordercolor="#10B981", borderwidth=1.5, borderpad=6, font=dict(color="#FFFFFF", size=11))
-        fig_quadrant2.add_annotation(x=500, y=2000, xref="x", yref="y", text="<b>🏰 BLOCKBUSTERS CONSOLIDADOS</b><br><i>Alto Presupuesto / Alta Pop.</i><br><span style='font-size:10px;color:#BAE6FD'>Inversión Justificada (Marketing)</span>", showarrow=False, align="right", bgcolor="rgba(12, 74, 110, 0.9)", bordercolor="#38BDF8", borderwidth=1.5, borderpad=6, font=dict(color="#FFFFFF", size=11))
-        fig_quadrant2.add_annotation(x=500, y=2.0, xref="x", yref="y", text="<b>🛑 INEFICIENCIA FINANCIERA</b><br><i>Alto Presupuesto / Pop. Mod.</i><br><span style='font-size:10px;color:#FCA5A5'>Evitar / Re-negociar a la baja</span>", showarrow=False, align="right", bgcolor="rgba(127, 29, 29, 0.9)", bordercolor="#EF4444", borderwidth=1.5, borderpad=6, font=dict(color="#FFFFFF", size=11))
-        fig_quadrant2.add_annotation(x=0.2, y=2.0, xref="x", yref="y", text="<b>🌱 CONTENIDO NATIVO DE NICHO</b><br><i>Bajo Presupuesto / Pop. Mod.</i><br><span style='font-size:10px;color:#CBD5E1'>Completar catálogo específico</span>", showarrow=False, align="left", bgcolor="rgba(51, 65, 85, 0.9)", bordercolor="#64748B", borderwidth=1.5, borderpad=6, font=dict(color="#FFFFFF", size=11))
-
-        # Gráfico de Tendencia Histórica
-        trend_df = d.groupby(['anio_estreno', 'tipo']).size().reset_index(name='cantidad')
-        fig_trend = px.line(trend_df, x="anio_estreno", y="cantidad", color="tipo", color_discrete_map=COLOR_MAP, title="<b>Evolución Histórica de Títulos en la Biblioteca por Año de Estreno</b>")
-        fig_trend.update_layout(**LAYOUT_BASE)
 
         return html.Div([
             create_section_header("Matriz de Adquisición y Eficiencia de Licencias", "Herramientas analíticas de 4 cuadrantes para priorizar compras según poder de atracción, retención y costo estimado."),
@@ -492,10 +475,7 @@ def render_tab_content(tab, selected_types, selected_genres, selected_tiers, sel
                     html.P("📌 Diagnóstico Matriz 2: Mapea si los títulos de alto presupuesto realmente generan tracción proporcional antes de renovar contratos de alto costo.", style={"fontSize": "11px", "color": SUBTEXT, "marginTop": "4px"})
                 ], style={"flex": "1", "minWidth": "480px"}),
             ], style={"display": "flex", "gap": "16px", "flexWrap": "wrap", "marginBottom": "20px"}),
-            
-            dcc.Graph(figure=fig_trend),
-            html.P("📌 Control de Contratos: Mapeo del ciclo de antigüedad para programar renovaciones antes del vencimiento de derechos.", style={"fontSize": "11px", "color": SUBTEXT})
-        ])
+            ])
 
     # ─────────────────────────────────────────────────────────────────
     # TAB 5: EXPLORADOR GRANULAR
